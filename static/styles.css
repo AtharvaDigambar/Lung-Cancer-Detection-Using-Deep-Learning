@@ -1,0 +1,325 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #e0f7fa, #80deea);
+    color: #333;
+}
+
+header {
+    background: #0288d1;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+nav a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #b3e5fc;
+}
+
+#hero {
+    background: linear-gradient(rgba(2, 136, 209, 0.8), rgba(2, 136, 209, 0.5)), url('https://www.transparenttextures.com/patterns/lung-tissue.png');
+    padding: 4rem 2rem;
+    text-align: center;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+
+.hero-content h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+.hero-content p { font-size: 1.2rem; margin-bottom: 2rem; }
+.hero-content button { padding: 12px 24px; font-size: 1.1rem; }
+
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+section {
+    background: white;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+h2 {
+    color: #0288d1;
+    margin-bottom: 1rem;
+}
+
+.upload-zone {
+    border: 2px dashed #0288d1;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+    border-color: #ff5722;
+    background: #e3f2fd;
+    transform: scale(1.02);
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 1rem auto;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 255, 0, 0.3); /* Transparent green overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+}
+
+.loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #0288d1;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+button {
+    padding: 10px 20px;
+    background: #0288d1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+}
+
+button:hover {
+    background: #0277bd;
+    transform: scale(1.05);
+}
+
+.card {
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 5px;
+    margin: 1rem 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.message {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 5px;
+}
+
+.message.success { background: #d4edda; color: #155724; }
+.message.warning { background: #f8d7da; color: #721c24; }
+
+/* Video Section Styles */
+#learn-more {
+    text-align: center;
+}
+
+.video-link {
+    text-decoration: none;
+    display: inline-block;
+}
+
+.video-thumbnail {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 1rem auto;
+}
+
+.video-thumbnail img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+}
+
+.video-thumbnail:hover img {
+    transform: scale(1.05);
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 0, 0, 0.8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.play-button::before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 20px solid white;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+.video-thumbnail:hover .play-button {
+    background: rgba(255, 0, 0, 1);
+}
+
+.video-caption {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+/* Resources Section Styles */
+.resources {
+    margin-top: 2rem;
+}
+
+.resources h3 {
+    color: #0288d1;
+    margin-bottom: 1rem;
+}
+
+.resources ul {
+    list-style: none;
+    padding: 0;
+}
+
+.resources li {
+    margin: 1rem 0;
+    line-height: 1.5;
+}
+
+.resources span {
+    display: block;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.resources a {
+    color: #0288d1;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.resources a:hover {
+    color: #ff5722;
+    text-decoration: underline;
+}
+
+/* Footer Styles */
+footer {
+    background: #0288d1;
+    color: white;
+    padding: 2rem 0;
+    position: relative;
+    z-index: 2;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 0 2rem;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+    margin: 1rem 0;
+}
+
+.footer-section h3 {
+    color: #b3e5fc;
+    margin-bottom: 1rem;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section li {
+    margin: 0.5rem 0;
+}
+
+.footer-section a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-section a:hover {
+    color: #ff5722;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding: 1rem 0;
+    background: #0277bd;
+    margin-top: 1rem;
+}
+
+.footer-bottom p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+/* Note Style for Demo Page */
+.note {
+    font-size: 0.9rem;
+    color: #555;
+    text-align: center;
+    font-style: italic;
+}
+
+.note code {
+    background: #e3f2fd;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: #0288d1;
+}
+
+/* New Blinking Animation */
+.blink {
+    animation: blinkNote 3s infinite;
+}
+
+@keyframes blinkNote {
+    0%, 10%, 90%, 100% { opacity: 1; } /* Visible for most of the cycle */
+    45%, 55% { opacity: 0; } /* Briefly invisible in the middle */
+}

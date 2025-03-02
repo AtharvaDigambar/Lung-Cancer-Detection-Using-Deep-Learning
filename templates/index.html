@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LungGuardian AI - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('serve_static', filename='styles.css') }}">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>LungGuardian AI</h1>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#lung-cancer">Lung Cancer</a>
+            <a href="#model-info">Model Info</a>
+            <a href="#case-differences">Case Differences</a>
+            <a href="#learn-more">Learn More</a>
+            <a href="demo.html">Start Demo</a>
+        </nav>
+    </header>
+
+    <section id="hero">
+        <div class="hero-content">
+            <h2>Welcome to LungGuardian AI</h2>
+            <p>Harness the power of deep learning to detect lung cancer early with precision.</p>
+            <button onclick="window.location.href='/demo'">Start Demo</button>
+        </div>
+    </section>
+
+    <div class="container">
+        <section id="lung-cancer">
+            <h2>About Lung Cancer :  A Global Health Challenge</h2>
+            <p>Lung cancer is one of the most aggressive and life-threatening forms of cancer, claiming millions of lives globally each year. It originates in the lungs when abnormal cells grow uncontrollably, forming tumors that interfere with normal lung function. The primary cause of lung cancer is smoking, which introduces harmful carcinogens into the lungs, damaging cells and triggering mutations. However, non-smokers can also develop lung cancer due to factors such as prolonged exposure to secondhand smoke, air pollution, radon gas, asbestos, and other toxic substances. There are two main types of lung cancer: non-small cell lung cancer (NSCLC), which accounts for about 85% of cases and progresses more slowly, and small cell lung cancer (SCLC), a more aggressive form that spreads rapidly. One of the biggest challenges with lung cancer is that it often goes undetected in its early stages, as symptoms like persistent coughing, shortness of breath, chest pain, and unexplained weight loss may not appear until the disease has advanced. However, early detection can dramatically improve survival rates, with timely diagnosis increasing the chances of successful treatment by up to 90%. Advanced medical imaging techniques like X-rays and CT scans play a crucial role in identifying lung cancer at an early stage. Additionally, modern AI-powered deep learning models have been developed to analyze medical scans and detect cancerous abnormalities with high accuracy, assisting doctors in making faster and more precise diagnoses. Treatment options vary depending on the stage and type of lung cancer and may include surgery, chemotherapy, radiation therapy, targeted therapy, or immunotherapy. Preventative measures such as avoiding smoking, reducing exposure to pollutants, maintaining a healthy diet, and undergoing regular screenings can significantly lower the risk of developing lung cancer. Despite its severity, ongoing advancements in medical research and AI-driven technologies continue to improve early detection and treatment, offering hope for better survival outcomes and improved quality of life for patients.</p>
+            <h2>The Role of LungGuardian AI in Early Detection</h2>
+            <p>Advancements in artificial intelligence (AI) have revolutionized the healthcare industry, particularly in medical imaging. Our AI-powered system analyzes CT scans to detect anomalies that may indicate lung cancer. By leveraging deep learning models trained on vast datasets, the AI can identify patterns and abnormalities that might be missed by the human eye. This technology enhances diagnostic accuracy, enabling doctors to make faster and more informed decisions.</p>
+            <h2>Impact on Patient Care</h2>
+            <p>With AI-driven lung cancer detection, medical professionals can diagnose cases at an early stage, allowing for timely intervention and personalized treatment plans. This not only increases survival rates but also reduces the financial and emotional burden on patients and their families. As AI continues to evolve, it has the potential to transform cancer detection, making healthcare more efficient and accessible to people worldwide.
+
+               <br> By integrating AI into lung cancer diagnostics, we take a step forward in the fight against this deadly disease, ensuring that more lives are saved through early and accurate detection.</p>
+        </section>
+
+        <section id="case-differences">
+            <h2>Understanding Cases</h2>
+            <div class="card">
+                <h3>Normal</h3>
+                <p>Healthy lungs show clear airways and no abnormal growths on scans.</p>
+            </div>
+
+            <div class="card">
+                <h3>Malignant</h3>
+                <p>Cancerous tumors that grow and spread, requiring immediate attention.</p>
+            </div>
+        </section>
+        <section id="how-it-works">
+            <h2>How Our Deep Learning Model Works</h2>
+            <p>Ever wondered how a computer can look at a lung scan and tell if something’s wrong? Here’s a simple explanation of how our smart system, called a "deep learning model," does it:</p>
+            <div class="card">
+                <h3>Step 1: Learning from Examples</h3>
+                <p>Imagine teaching a child to recognize cats by showing them lots of cat pictures. We do the same with our model! We show it thousands of lung scans—some healthy, some with harmless growths, and some with cancer. Over time, it learns what "normal," "benign," and "malignant" lungs look like, just like the child learns to spot cats.</p>
+            </div>
+            <div class="card">
+                <h3>Step 2: Breaking Down the Picture</h3>
+                <p>When you give it a new scan, the model doesn’t see it as one big picture. It’s like a super-smart detective who breaks the image into tiny pieces—looking at shapes, textures, and patterns. It has layers, like a stack of filters, that notice little details (like edges) and bigger things (like growths) all at once.</p>
+            </div>
+            <div class="card">
+                <h3>Step 3: Making a Guess</h3>
+                <p>After studying the pieces, the model puts everything together and makes a guess: "Is this normal, benign, or malignant?" It gives a score for each possibility—like saying, "I’m 89% sure this is normal." The highest score wins, and that’s what it tells you!</p>
+            </div>
+            <div class="card">
+                <h3>Step 4: Showing You the Clues</h3>
+                <p>Ever wanted to know why it made that guess? Our model draws a "heatmap"—a colorful picture overlaid on your scan. Bright spots show where it looked the most, like a treasure map pointing to areas it thinks are important. This helps doctors double-check its work!</p>
+            </div>
+            <p>In short, our model is like a tireless student who’s studied tons of lung scans to become an expert spotter, helping us catch lung cancer early with a clear, easy-to-understand answer.</p>
+        </section>
+        <section id="model-info">
+            <h2>Our Model Performance</h2>
+            <div class="card">
+                <h3>Accuracy</h3>
+                <p>Our model achieves a <strong>85%</strong> accuracy on the test set, ensuring reliable predictions.</p>
+            </div>
+            <div class="card">
+                <h3>Test Score</h3>
+                <p>Tested on the IQ-OTHNCCD dataset, with a precision of <strong>89%</strong> and recall of <strong>80%</strong>.</p>
+            </div>
+            <div class="card">
+                <h3>Training Details</h3>
+                <p>Built with EfficientNetB0, fine-tuned on 20 epochs with a diverse dataset of lung scans.</p>
+            </div>
+        </section>
+        <section id="learn-more">
+            <h2>Learn More</h2>
+            <p>Watch this video to get an overview how deep learning model works with images</p>
+            <a href="https://www.youtube.com/watch?v=QzY57FaENXg" target="_blank" class="video-link">
+                <div class="video-thumbnail">
+                    <img src="{{ url_for('serve_static', filename='images/cnn.png') }}" alt="Sample" width="300">
+                    <div class="play-button"></div>
+                </div>
+            </a>
+            <p class="video-caption">Video: "What are Convolutional Neural Networks (CNNs)?" Video credit: IBM Technology</p>
+            <p>Watch this video to learn how to read CT scan of lungs.  </p>
+            <a href="https://www.youtube.com/watch?v=Nd9Dc0G_Mg4" target="_blank" class="video-link">
+                <div class="video-thumbnail">
+                    <img src="{{ url_for('serve_static', filename='images/lung ct scan.png') }}" alt="Sample" width="300">
+                    <div class="play-button"></div>
+                </div>
+            </a>
+            <p class="video-caption">Video: "How to Read a CT Scan Chest - A Radiologists Approach" Video credit: Medical Basics</p>       
+            <div class="resources">
+                <h3>Additional Resources (Links)</h3>
+                <ul>
+                    <li>
+                        <span>Learn about lung cancer symptoms, risks, and treatments.</span>
+                        <a href="https://www.lung.org/lung-health-diseases/lung-disease-lookup/lung-cancer" target="_blank">American Lung Association: Lung Cancer Overview</a>
+                    </li>
+                    <li>
+                        <span>Detailed guide on lung cancer types and staging.</span>
+                        <a href="https://www.cancer.org/cancer/lung-cancer.html" target="_blank">American Cancer Society: Lung Cancer</a>
+                    </li>
+                    <li>
+                        <span>Research on AI applications in diagnostics.</span>
+                        <a href="https://www.nature.com/articles/s41591-019-0447-x" target="_blank">Nature: AI in Medical Imaging</a>
+                    </li>
+                    <li>
+                        <span>Global statistics and prevention tips.</span>
+                        <a href="https://www.who.int/news-room/fact-sheets/detail/lung-cancer" target="_blank">WHO: Lung Cancer Facts</a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        
+    </div>
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#model-info">Model Info</a></li>
+                    <li><a href="#lung-cancer">Lung Cancer</a></li>
+                    <li><a href="#case-differences">Case Differences</a></li>
+                    <li><a href="demo.html">Start Demo</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us / Feedback</h3>
+                <p>Email: <a href="mailto:digambaratharva@gmail.com">digambaratharva@gmail.com</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>Team: LungGuardian AI</h3>
+                <ul>
+                    <li>Atharva A Digambar - Team Lead</li>
+                    <li>Jasshan Bhalgat</li>
+                    <li>Sushant Sabale</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <ul class="social-links">
+                    <li>GitHub</li>
+                    <li>Twitter</li>
+                    <li>LinkedIn</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 LungGuardian AI. All rights reserved. Developed with ❤️, team collabration & guidance from suppoters.</p>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; Our team LungGuardian AI, built this model for the AI in Healthcare Hackathon.</p>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="{{ url_for('serve_static', filename='script.js') }}"></script>
+    <script src="script.js"></script>    
+</body>
+</html>

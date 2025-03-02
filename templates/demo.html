@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LungGuardian AI - Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('serve_static', filename='styles.css') }}">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>LungGuardian AI - Demo</h1>
+        <nav>
+            <a href="index.html">Back to Home</a>
+        </nav>
+    </header>
+    <div style="text-align: center;">
+        <a href="https://drive.google.com/drive/folders/18OuxY0GYhCj0btBLiOwlTsWKkfSqsM6O?usp=sharing" target="_blank" style="color: rgb(6, 6, 6); text-decoration: none;">Sample Images</a>
+    </div>
+    
+    <p class="note blink">Please read the note and instructions below before running the model</p>
+    <div class="container">
+        <section id="detection">
+            <h2>Upload Your Scan</h2>
+            <div id="upload" class="upload-zone">
+                <p>Drag & Drop Your X-ray/CT Scan Here<br>or Click to Upload</p>
+                <input type="file" id="fileInput" accept=".jpg,.png" style="display: none;">
+            </div>
+            <div id="processing" style="display: none;">
+                <div class="image-container">
+                    <img id="uploaded-image" style="width: 100%; max-width: 400px; border-radius: 5px;">
+                    <div class="overlay">
+                        <div class="loader"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="results" style="display: none;">
+                <h3>Results</h3>
+                <p>Prediction: <strong id="probability"></strong></p>
+                <p>Confidence: <strong id="confidence"></strong></p>
+                <img id="heatmap" style="width: 100%; max-width: 400px; border-radius: 5px; display: none;" alt="Heatmap">
+                <div id="message" class="message"></div>
+                <button onclick="reset()">Try Another Scan</button>
+            </div>
+        </section>
+    </div>
+    <div class="container">
+        <section id="upload-note">
+            <h3>Note:</h3>
+            <p>Our Lung Cancer Detection Model is currently in the learning phase. Please keep the following in mind while using the model:</p>
+            <p>1. The model only accepts images of sepcific sacle (28×28) resolution in .png or .jpeg format.Soon model will learn to deal with images with any sacle and format.</p>
+            <p>2. It has been trained on 2,000 lung CT scan images, so its accuracy is increasing every time it gets new image.</p>
+            <p>3. You can download "Sample Images" provided to test the model, the folder contains CT scan images of normal and Malignant case (Use the images to test the model only).</p>
+            <p>4. Predictions might not be accurate if images with differenct scale are uploded.</p>
+            <p style="text-align:center">Your feedback and suggestions are valuable in improving our model.<br> We appreciate your support!</p>
+        </section>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+    <script src="{{ url_for('serve_static', filename='script.js') }}"></script>
+    <script src="script.js"></script>
+</body>
+</html>
