@@ -1,6 +1,6 @@
 FROM python:3.10  
 
-LABEL maintainer="Atharva Digambar" \
+LABEL maintainer="AtharvaDigambar" \
       version="1.0" \
       description="Lung Cancer Detection using Deep Learning"  
 
