@@ -1,16 +1,13 @@
-FROM python:3.10  
+myenv
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pywz
 
-LABEL maintainer="AtharvaDigambar" \
-      version="1.0" \
-      description="Lung Cancer Detection using Deep Learning"  
-
-WORKDIR /app  
-
-COPY . .  
-
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt  
-
-EXPOSE 8080  
-
-CMD ["python", "app.py"]
+.git
+.gitignore
+.vscode
+.env
+*.log*
