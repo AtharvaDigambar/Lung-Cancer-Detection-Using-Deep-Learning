@@ -49,7 +49,7 @@ if (document.getElementById('upload')) {
             formData.append('image', file);
 
             try {
-                const response = await fetch('http://localhost:5000/predict', {
+                const response = await fetch('/predict', {
                     method: 'POST',
                     body: formData
                 });
