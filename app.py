@@ -24,20 +24,26 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Model Path
-MODEL_PATH = "final_cancer_model.h5"
+# Load TFLite Model (for predictions)
+TFLITE_MODEL_PATH = os.path.join(os.path.dirname(__file__), 'final_cancer_model.tflite')
+if not os.path.exists(TFLITE_MODEL_PATH):
+    logger.error(f"TFLite model file {TFLITE_MODEL_PATH} not found.")
+    raise FileNotFoundError(f"TFLite model file {TFLITE_MODEL_PATH} not found.")
+interpreter = tf.lite.Interpreter(model_path=TFLITE_MODEL_PATH)
+interpreter.allocate_tensors()
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
-# Check if model exists before loading
-if not os.path.exists(MODEL_PATH):
-    logger.error(f"Model file {MODEL_PATH} not found.")
-    raise FileNotFoundError(f"Model file {MODEL_PATH} not found.")
+# Load Keras Model (for heatmaps)
+H5_MODEL_PATH = os.path.join(os.path.dirname(__file__), 'final_cancer_model.h5')
+if not os.path.exists(H5_MODEL_PATH):
+    logger.error(f"Keras model file {H5_MODEL_PATH} not found.")
+    raise FileNotFoundError(f"Keras model file {H5_MODEL_PATH} not found.")
+keras_model = tf.keras.models.load_model(H5_MODEL_PATH)
 
-try:
-    model = tf.keras.models.load_model(MODEL_PATH)
-    logger.info("Model loaded successfully")
-except Exception as e:
-    logger.error(f"Failed to load model: {str(e)}")
-    raise
+IMG_SIZE = (224, 224)  # Match training size
+class_names = ['Benign', 'Malignant', 'Normal']
+logger.info("Both TFLite and Keras models loaded successfully")
 
 # Image Preprocessing Function
 def preprocess_image(image_path):
@@ -46,14 +52,14 @@ def preprocess_image(image_path):
         if img is None:
             raise ValueError("Invalid image file")
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = cv2.resize(img, (224, 224))
+        img = cv2.resize(img, IMG_SIZE)
         img = np.expand_dims(img, axis=0) / 255.0
-        return img
+        return img.astype(np.float32)  # Ensure float32 for TFLite
     except Exception as e:
         logger.error(f"Error in image preprocessing: {str(e)}")
         raise
 
-# Generate Heatmap
+# Generate Heatmap (using Keras model)
 def generate_heatmap(model, img_array, class_idx):
     try:
         last_conv_layer = next(layer for layer in reversed(model.layers) if 'conv' in layer.name.lower())
@@ -68,14 +74,12 @@ def generate_heatmap(model, img_array, class_idx):
         conv_outputs = conv_outputs[0]
 
         heatmap = tf.reduce_mean(conv_outputs * pooled_grads, axis=-1)
-
         heatmap = np.maximum(heatmap, 0)
         if np.max(heatmap) == 0:
             logger.warning("Heatmap normalization issue: Max value is 0")
             return None
-
         heatmap /= np.max(heatmap)
-        heatmap = cv2.resize(heatmap, (224, 224))
+        heatmap = cv2.resize(heatmap, IMG_SIZE)
         return heatmap
     except Exception as e:
         logger.error(f"Error in heatmap generation: {str(e)}")
@@ -130,13 +134,13 @@ def predict():
         logger.info(f"Image saved at {file_path}")
 
         img = preprocess_image(file_path)
-        prediction = model.predict(img, verbose=0)
 
-        if prediction.shape[-1] != 3:
-            raise ValueError(f"Expected 3 classes, got shape {prediction.shape}")
+        # Predict with TFLite
+        interpreter.set_tensor(input_details[0]['index'], img)
+        interpreter.invoke()
+        prediction = interpreter.get_tensor(output_details[0]['index'])[0]
 
-        probabilities = prediction[0]
-        
+        probabilities = prediction
         class_probs = {
             'Benign': float(probabilities[0]),
             'Malignant': float(probabilities[1]),
@@ -152,7 +156,8 @@ def predict():
 
         class_idx = list(class_probs.keys()).index(predicted_class)
 
-        heatmap = generate_heatmap(model, img, class_idx)
+        # Generate heatmap with Keras model
+        heatmap = generate_heatmap(keras_model, img, class_idx)
         heatmap_base64 = overlay_heatmap(img, heatmap) if heatmap is not None else None
 
         result = {
@@ -164,8 +169,8 @@ def predict():
         }
 
         # Memory cleanup
-        del img, prediction, heatmap  # Free large objects
-        gc.collect()                  # Force garbage collection
+        del img, prediction, heatmap
+        gc.collect()
 
         return jsonify(result)
 
