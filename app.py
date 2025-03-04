@@ -4,7 +4,7 @@ import tensorflow as tf
 import os
 import logging
 import numpy as np
-import cv2
+import cv2  # Added explicitly to fix the error
 import base64
 from io import BytesIO
 from PIL import Image
@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Load TFLite Model (quantized for predictions)
-TFLITE_MODEL_PATH = os.path.join(os.path.dirname(__file__), 'final_cancer_model_quantized.tflite')
+TFLITE_MODEL_PATH = os.path.join(os.path.dirname(__file__), '1_deploy_final_cancer_model.tflite')
 if not os.path.exists(TFLITE_MODEL_PATH):
     logger.error(f"TFLite model file {TFLITE_MODEL_PATH} not found.")
     raise FileNotFoundError(f"TFLite model file {TFLITE_MODEL_PATH} not found.")
