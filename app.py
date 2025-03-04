@@ -3,29 +3,25 @@ from flask_cors import CORS
 import tensorflow as tf
 import os
 import logging
-import cv2
 import numpy as np
 import base64
 from io import BytesIO
 from PIL import Image
 import gc
 
-# Initialize Flask App
 app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)
 
-# Define Upload Folder
 UPLOAD_FOLDER = "/tmp/uploads"
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Logging Setup
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Load TFLite Model (for predictions)
-TFLITE_MODEL_PATH = os.path.join(os.path.dirname(__file__), 'Deploy_lung_cancer_model.tflite')
+# Load TFLite Model (predictions)
+TFLITE_MODEL_PATH = os.path.join(os.path.dirname(__file__), '1_deploy_final_cancer_model.tflite')
 if not os.path.exists(TFLITE_MODEL_PATH):
     logger.error(f"TFLite model file {TFLITE_MODEL_PATH} not found.")
     raise FileNotFoundError(f"TFLite model file {TFLITE_MODEL_PATH} not found.")
@@ -34,45 +30,40 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-# Load Keras Model (for heatmaps)
+# Load Keras Model (heatmaps)
 H5_MODEL_PATH = os.path.join(os.path.dirname(__file__), 'final_cancer_model.h5')
 if not os.path.exists(H5_MODEL_PATH):
     logger.error(f"Keras model file {H5_MODEL_PATH} not found.")
     raise FileNotFoundError(f"Keras model file {H5_MODEL_PATH} not found.")
 keras_model = tf.keras.models.load_model(H5_MODEL_PATH)
 
-IMG_SIZE = (224, 224)  # Match training size
-class_names = ['Benign', 'Malignant', 'Normal']
+IMG_SIZE = (224, 224)
+class_names = ['Benign', 'Malignant', 'Normal']  # Verify this order
 logger.info("Both TFLite and Keras models loaded successfully")
 
-# Image Preprocessing Function
+# Preprocessing (aligned with Keras)
 def preprocess_image(image_path):
     try:
-        img = cv2.imread(image_path, cv2.IMREAD_COLOR)
-        if img is None:
-            raise ValueError("Invalid image file")
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = cv2.resize(img, IMG_SIZE)
-        img = np.expand_dims(img, axis=0) / 255.0
-        return img.astype(np.float32)  # Ensure float32 for TFLite
+        img = Image.open(image_path).convert('RGB')
+        img = img.resize(IMG_SIZE)
+        img = np.array(img, dtype=np.float32) / 255.0
+        img = np.expand_dims(img, axis=0)
+        return img
     except Exception as e:
         logger.error(f"Error in image preprocessing: {str(e)}")
         raise
 
-# Generate Heatmap (using Keras model)
+# Generate Heatmap
 def generate_heatmap(model, img_array, class_idx):
     try:
         last_conv_layer = next(layer for layer in reversed(model.layers) if 'conv' in layer.name.lower())
         grad_model = tf.keras.models.Model([model.inputs], [last_conv_layer.output, model.output])
-
         with tf.GradientTape() as tape:
             conv_outputs, predictions = grad_model(img_array)
             loss = predictions[:, class_idx]
-
         grads = tape.gradient(loss, conv_outputs)[0]
         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
         conv_outputs = conv_outputs[0]
-
         heatmap = tf.reduce_mean(conv_outputs * pooled_grads, axis=-1)
         heatmap = np.maximum(heatmap, 0)
         if np.max(heatmap) == 0:
@@ -85,14 +76,13 @@ def generate_heatmap(model, img_array, class_idx):
         logger.error(f"Error in heatmap generation: {str(e)}")
         return None
 
-# Overlay Heatmap on Original Image
+# Overlay Heatmap
 def overlay_heatmap(original_img, heatmap):
     try:
         heatmap = np.uint8(255 * heatmap)
         heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
         original_img = np.uint8(original_img[0] * 255)
         superimposed_img = cv2.addWeighted(original_img, 0.6, heatmap, 0.4, 0)
-
         img_pil = Image.fromarray(superimposed_img)
         buffered = BytesIO()
         img_pil.save(buffered, format="PNG")
@@ -102,27 +92,22 @@ def overlay_heatmap(original_img, heatmap):
         logger.error(f"Error overlaying heatmap: {str(e)}")
         return None
 
-# Serve the Main Webpage
 @app.route("/")
 def home():
     return render_template("index.html")
 
-# Route for Demo Page
 @app.route("/demo")
 def demo():
     return render_template("demo.html")
 
-# Serve Static Files
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory("static", filename)
 
-# Prediction Endpoint
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'image' not in request.files:
         return jsonify({'error': 'No image uploaded'}), 400
-
     file = request.files['image']
     if file.filename == '':
         return jsonify({'error': 'No file selected'}), 400
@@ -135,7 +120,7 @@ def predict():
 
         img = preprocess_image(file_path)
 
-        # Predict with TFLite
+        # TFLite prediction
         interpreter.set_tensor(input_details[0]['index'], img)
         interpreter.invoke()
         prediction = interpreter.get_tensor(output_details[0]['index'])[0]
@@ -149,14 +134,11 @@ def predict():
 
         predicted_class = max(class_probs, key=class_probs.get)
         confidence = max(class_probs.values())
-
         if confidence == 0:
             logger.warning("Confidence score is 0, possible model issue.")
             confidence = 1e-6
 
         class_idx = list(class_probs.keys()).index(predicted_class)
-
-        # Generate heatmap with Keras model
         heatmap = generate_heatmap(keras_model, img, class_idx)
         heatmap_base64 = overlay_heatmap(img, heatmap) if heatmap is not None else None
 
@@ -168,10 +150,8 @@ def predict():
             'details': {k: round(v * 100, 2) for k, v in class_probs.items()}
         }
 
-        # Memory cleanup
         del img, prediction, heatmap
         gc.collect()
-
         return jsonify(result)
 
     except Exception as e:
