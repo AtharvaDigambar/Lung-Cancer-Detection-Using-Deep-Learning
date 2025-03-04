@@ -4,24 +4,28 @@ import tensorflow as tf
 import os
 import logging
 import numpy as np
+import cv2
 import base64
 from io import BytesIO
 from PIL import Image
 import gc
 
+# Initialize Flask App
 app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)
 
+# Define Upload Folder
 UPLOAD_FOLDER = "/tmp/uploads"
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# Logging Setup
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Load TFLite Model (predictions)
-TFLITE_MODEL_PATH = os.path.join(os.path.dirname(__file__), '1_deploy_final_cancer_model.tflite')
+# Load TFLite Model (quantized for predictions)
+TFLITE_MODEL_PATH = os.path.join(os.path.dirname(__file__), 'final_cancer_model_quantized.tflite')
 if not os.path.exists(TFLITE_MODEL_PATH):
     logger.error(f"TFLite model file {TFLITE_MODEL_PATH} not found.")
     raise FileNotFoundError(f"TFLite model file {TFLITE_MODEL_PATH} not found.")
@@ -30,7 +34,7 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
-# Load Keras Model (heatmaps)
+# Load Keras Model (for heatmaps)
 H5_MODEL_PATH = os.path.join(os.path.dirname(__file__), 'final_cancer_model.h5')
 if not os.path.exists(H5_MODEL_PATH):
     logger.error(f"Keras model file {H5_MODEL_PATH} not found.")
@@ -38,22 +42,25 @@ if not os.path.exists(H5_MODEL_PATH):
 keras_model = tf.keras.models.load_model(H5_MODEL_PATH)
 
 IMG_SIZE = (224, 224)
-class_names = ['Benign', 'Malignant', 'Normal']  # Verify this order
-logger.info("Both TFLite and Keras models loaded successfully")
+class_names = ['Benign', 'Malignant', 'Normal']  # Verify this matches training order
+logger.info("Both TFLite (quantized) and Keras models loaded successfully")
 
-# Preprocessing (aligned with Keras)
+# Preprocessing Function (aligned with training)
 def preprocess_image(image_path):
     try:
         img = Image.open(image_path).convert('RGB')
         img = img.resize(IMG_SIZE)
-        img = np.array(img, dtype=np.float32) / 255.0
+        img = np.array(img, dtype=np.float32)
+        # Uncomment the next line if your model was trained with EfficientNet preprocessing
+        # img = tf.keras.applications.efficientnet.preprocess_input(img)
+        img = img / 255.0  # Default normalization (keep this if unsure about training)
         img = np.expand_dims(img, axis=0)
         return img
     except Exception as e:
         logger.error(f"Error in image preprocessing: {str(e)}")
         raise
 
-# Generate Heatmap
+# Generate Heatmap (using Keras model)
 def generate_heatmap(model, img_array, class_idx):
     try:
         last_conv_layer = next(layer for layer in reversed(model.layers) if 'conv' in layer.name.lower())
@@ -76,7 +83,7 @@ def generate_heatmap(model, img_array, class_idx):
         logger.error(f"Error in heatmap generation: {str(e)}")
         return None
 
-# Overlay Heatmap
+# Overlay Heatmap on Original Image
 def overlay_heatmap(original_img, heatmap):
     try:
         heatmap = np.uint8(255 * heatmap)
@@ -92,22 +99,27 @@ def overlay_heatmap(original_img, heatmap):
         logger.error(f"Error overlaying heatmap: {str(e)}")
         return None
 
+# Serve the Main Webpage
 @app.route("/")
 def home():
     return render_template("index.html")
 
+# Route for Demo Page
 @app.route("/demo")
 def demo():
     return render_template("demo.html")
 
+# Serve Static Files
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory("static", filename)
 
+# Prediction Endpoint
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'image' not in request.files:
         return jsonify({'error': 'No image uploaded'}), 400
+
     file = request.files['image']
     if file.filename == '':
         return jsonify({'error': 'No file selected'}), 400
@@ -120,7 +132,7 @@ def predict():
 
         img = preprocess_image(file_path)
 
-        # TFLite prediction
+        # TFLite prediction (quantized model)
         interpreter.set_tensor(input_details[0]['index'], img)
         interpreter.invoke()
         prediction = interpreter.get_tensor(output_details[0]['index'])[0]
@@ -150,6 +162,7 @@ def predict():
             'details': {k: round(v * 100, 2) for k, v in class_probs.items()}
         }
 
+        # Memory cleanup
         del img, prediction, heatmap
         gc.collect()
         return jsonify(result)
