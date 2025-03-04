@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Load TFLite Model (for predictions)
-TFLITE_MODEL_PATH = os.path.join(os.path.dirname(__file__), 'final_cancer_model.tflite')
+TFLITE_MODEL_PATH = os.path.join(os.path.dirname(__file__), 'Deploy_lung_cancer_model.tflite')
 if not os.path.exists(TFLITE_MODEL_PATH):
     logger.error(f"TFLite model file {TFLITE_MODEL_PATH} not found.")
     raise FileNotFoundError(f"TFLite model file {TFLITE_MODEL_PATH} not found.")
