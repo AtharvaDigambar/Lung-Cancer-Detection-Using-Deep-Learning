@@ -7,10 +7,13 @@ LABEL maintainer="Atharva Digambar" \
 WORKDIR /app
 COPY . /app
 
-RUN apt-get update \
-    && apt-get install -y libgl1-mesa-glx \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        apt-utils \
+        libgl1-mesa-glx \
+    && rm -rf /var/lib/apt/lists/* \
     && pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
+
 
 EXPOSE 5000
 
