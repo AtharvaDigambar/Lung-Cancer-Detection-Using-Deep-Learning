@@ -41,7 +41,7 @@ input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
 IMG_SIZE = (224, 224)
-class_names = ['Malignant', 'Normal']  # Verify this matches training order
+class_names = ['Benign', 'Malignant', 'Normal']  # Verify this matches training order
 logger.info("TFLite (quantized) model loaded successfully")
 
 # Preprocessing Function (aligned with training)
